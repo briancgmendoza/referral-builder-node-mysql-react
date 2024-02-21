@@ -1,14 +1,17 @@
 import express, { Express } from "express";
-import dotenv from "dotenv";
 
-dotenv.config();
+import { createDatabasePool, pool } from './controllers/db.controller';
+import config from "./config"
+
 const app: Express = express();
-const PORT = 8080
-
 
 const startServer = async () => {
-    app.listen(PORT, () => {
-        console.log(`Server is running @ PORT ${PORT}`);
+    if(!pool) {
+        await createDatabasePool()
+    }
+
+    app.listen(config.PORT, () => {
+        console.log(`Server is running @ PORT ${config.PORT}`);
     });
 };
 
