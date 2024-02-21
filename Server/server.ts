@@ -1,9 +1,13 @@
-import express, { Express } from "express";
+import express, { Express, Router } from "express";
 
 import { createDatabasePool, pool } from './controllers/db.controller';
 import config from "./config"
+import routes from "./routes/user-routes";
 
 const app: Express = express();
+const router: Router = Router();
+
+routes(router)
 
 const startServer = async () => {
     if(!pool) {
@@ -13,6 +17,8 @@ const startServer = async () => {
     app.listen(config.PORT, () => {
         console.log(`Server is running @ PORT ${config.PORT}`);
     });
+
+    app.use(router)
 };
 
 startServer();
