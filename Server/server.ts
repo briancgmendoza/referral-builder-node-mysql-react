@@ -1,4 +1,5 @@
 import express, { Express, Router } from "express";
+import bodyParser from "body-parser";
 
 import { createDatabasePool, pool } from './controllers/db.controller';
 import config from "./config"
@@ -8,6 +9,7 @@ const app: Express = express();
 const router: Router = Router();
 
 routes(router)
+app.use(bodyParser.json());
 
 const startServer = async () => {
     if(!pool) {
