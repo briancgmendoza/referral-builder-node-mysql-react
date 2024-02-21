@@ -67,7 +67,21 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
       country
     ]);
 
-    res.status(201).json({ message: 'User added successfully' });
+    const addedUser: TUserProfile = {
+      given_name,
+      surname,
+      email,
+      phone,
+      house_no,
+      street,
+      suburb,
+      state,
+      postcode,
+      country,
+      avatar_image: null
+    } 
+
+    res.status(201).json({ message: 'User added successfully', data: addedUser });
   } catch (error) {
     console.error('Error adding user:', error);
     res.status(400).json({ error: 'Invalid data provided. Please check your input.' });

@@ -5,8 +5,7 @@ import { existingUser } from './../helpers/index';
 import {
   getUsersService,
   addUserService,
-  deleteUserService,
-  updateUserService
+  deleteUserService
 } from './../service/user.service';
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -31,8 +30,7 @@ export const addUser = async (req: Request, res: Response) => {
       return;
     }
 
-    const data = await addUserService(req, res)
-    res.status(200).json(data)
+    await addUserService(req, res)
   } catch (error) {
     console.log("Error [app.post(/add-user)]: ", error)
     res.status(500).json({ error: "Internal Server Error. Please try again later." })
@@ -41,8 +39,7 @@ export const addUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const deletedUser = await deleteUserService(req, res)
-    res.status(200).json(deletedUser)
+    await deleteUserService(req, res)
   } catch (error) {
     console.log("Error [app.delete(/user/:userId)]: ", error)
     res.status(500).json({ error: "Internal Server Error. Please try again later." })
