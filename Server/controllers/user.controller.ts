@@ -8,7 +8,7 @@ import {
   deleteUserService
 } from './../service/user.service';
 
-export const getUsers = async(req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
   try {
     const data = await getUsersService()
     res.status(200).json(data)
@@ -18,7 +18,7 @@ export const getUsers = async(req: Request, res: Response) => {
   }
 }
 
-export const addUser = async(req: Request, res: Response) => {
+export const addUser = async (req: Request, res: Response) => {
   try {
     
     const { email } = req.body
@@ -38,7 +38,7 @@ export const addUser = async(req: Request, res: Response) => {
   }
 }
 
-export const deleteUser = async(req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
     const deletedUser = await deleteUserService(req, res)
     res.status(200).json(deletedUser)
