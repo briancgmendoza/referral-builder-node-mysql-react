@@ -110,3 +110,84 @@ export const deleteUserService = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const updateUserService = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId: number = +req.params.userId;
+
+    const {
+      given_name,
+      surname,
+      email,
+      phone,
+      house_no,
+      street,
+      suburb,
+      state,
+      postcode,
+      country,
+      avatar_image
+    }: TUserProfile = req.body
+
+    if (!userId) {
+      res.status(400).json({ error: 'User ID is required.' });
+      return;
+    }
+
+    const updateQuery = `
+      UPDATE UserProfile
+      SET
+        given_name = COALESCE(?, given_name),
+        surname = COALESCE(?, surname),
+        email = COALESCE(?, email),
+        phone = COALESCE(?, phone),
+        house_no = COALESCE(?, house_no),
+        street = COALESCE(?, street),
+        suburb = COALESCE(?, suburb),
+        state = COALESCE(?, state),
+        postcode = COALESCE(?, postcode),
+        country = COALESCE(?, country),
+        avatar_image = COALESCE(?, avatar_image)
+      WHERE user_id = ?;
+    `
+
+    const [result]: [ResultSetHeader, FieldPacket[]] = await pool.query(updateQuery, [
+      given_name,
+      surname,
+      email,
+      phone,
+      house_no,
+      street,
+      suburb,
+      state,
+      postcode,
+      country,
+      avatar_image,
+      userId
+    ])
+
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: `User with ID ${userId} not found.` })
+      return;
+    }
+
+    const updatedUser: TUserProfile = {
+      given_name,
+      surname,
+      email,
+      phone,
+      house_no,
+      street,
+      suburb,
+      state,
+      postcode,
+      country,
+      avatar_image
+    }
+
+    res.status(200).json({ message: `User with ID ${userId} updated successfully.`, data: updatedUser })
+  } catch (error: any) {
+    console.log("Error updating user profile: ", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+}
