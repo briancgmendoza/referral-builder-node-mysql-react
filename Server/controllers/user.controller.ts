@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { getUsersService } from './../service/user.service';
+import { getUsersService, addUserService } from './../service/user.service';
 
 export const getUsers = async(req: Request, res: Response) => {
   try {
@@ -9,5 +9,20 @@ export const getUsers = async(req: Request, res: Response) => {
   } catch (error) {
     console.log("Error [app.get(/users)]: ", error)
     res.status(500).json({ error: "Internal Server Error" })
+  }
+}
+
+export const addUser = async(req: Request, res: Response) => {
+  try {
+    /**
+     * TODO: Add existingUser function here later
+     * Currently, when adding a user with the same email address,
+     * it would return an error.
+     */
+    const data = await addUserService(req, res)
+    res.status(200).json(data)
+  } catch (error) {
+    console.log("Error [app.post(/add-user)]: ", error)
+    res.status(500).json({ error: "Internal Server Error. Please try again later." })
   }
 }
