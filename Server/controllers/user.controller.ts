@@ -1,6 +1,10 @@
 import { Request, Response } from "express";
 
-import { getUsersService, addUserService } from './../service/user.service';
+import {
+  getUsersService,
+  addUserService,
+  deleteUserService
+} from './../service/user.service';
 
 export const getUsers = async(req: Request, res: Response) => {
   try {
@@ -23,6 +27,16 @@ export const addUser = async(req: Request, res: Response) => {
     res.status(200).json(data)
   } catch (error) {
     console.log("Error [app.post(/add-user)]: ", error)
+    res.status(500).json({ error: "Internal Server Error. Please try again later." })
+  }
+}
+
+export const deleteUser = async(req: Request, res: Response) => {
+  try {
+    const deletedUser = await deleteUserService(req, res)
+    res.status(200).json(deletedUser)
+  } catch (error) {
+    console.log("Error [app.post(/course/:courseId)]: ", error)
     res.status(500).json({ error: "Internal Server Error. Please try again later." })
   }
 }
