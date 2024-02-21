@@ -3,7 +3,7 @@ export type TUsers = {
 }
 
 export type TUserProfile = {
-  user_id: number;
+  user_id?: number;
   given_name: string;
   surname: string;
   email: string;
