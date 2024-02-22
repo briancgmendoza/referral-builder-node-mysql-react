@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { existingUser } from './../helpers/index';
+import { findByEmail, findById } from './../helpers/index';
 
 import {
   getUsersService,
@@ -23,8 +23,7 @@ export const addUser = async (req: Request, res: Response) => {
   try {
     const { email } = req.body
 
-    // If checking by email, pass undefined as first parameter as this is for userId
-    const userExists = await existingUser(undefined, email)
+    const userExists = await findByEmail(email)
 
     if(userExists) {
       res.status(400).json({ error: 'User with the same email already exists.' });
@@ -50,7 +49,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const userId: number = +req.params.userId;
-    const userExists = await existingUser(userId);
+    const userExists = await findById(userId);
 
     if (!userExists) {
       res.status(404).json({ error: "User not found" });
