@@ -1,6 +1,13 @@
+import Container from "./components/container"
+import IndexPage from "./pages/index-page"
+
 const App = () => {
   return (
-    <div>Hello from App</div>
+    <section>
+      <Container>
+        <IndexPage />
+      </Container>
+    </section>
   )
 }
 
