@@ -1,7 +1,7 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { getRequest } from "../service/request"
 import { TUserProfile } from "../../../Server/types"
+import { getUsers } from "./thunk";
 
 type RootState = {
   data: TUserProfile[];
@@ -14,16 +14,6 @@ const initialState: RootState = {
   status: "idle",
   error: ""
 }
-
-const getUsers = createAsyncThunk<TUserProfile[], void, { rejectValue: string }>("data/getUsers", async(_, thunkAPI) => {
-  try {
-    const response = await getRequest("/users")
-    return response
-  } catch (error) {
-    console.log("Error in FE [app.get(/users)]", error)
-    return thunkAPI.rejectWithValue("Error in fetching users")
-  }
-})
 
 const UsersSlice = createSlice({
   name: "Users",
