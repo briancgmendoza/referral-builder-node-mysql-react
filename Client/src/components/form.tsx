@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Box,
   Button,
@@ -6,16 +7,23 @@ import {
   TextField,
   Typography
 } from "@mui/material"
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
 
+import { TFormProps, TUserWithoutId } from "../types";
+import { RootState } from "../store";
+import { getUserById } from "../store/userSlice";
+import { updateUserProfile } from "../store/updateUserSlice";
+import { addUser } from "../store/addUserSlice";
+
 const formSchema = z.object({
-  givenName: z.string().min(2, { message: "Given Name is required"}),
+  given_name: z.string().min(2, { message: "Given Name is required"}),
   surname: z.string().min(2, { message: "Surname is required"}),
   email: z.string().min(1, { message: "Email is required"}).email({ message: "Must be a valid email"}),
-  phone: z.string().min(10, { message: "Must be a valid phone number"}).max(15, { message: "Phone must contain at most 15 characters(s)"}),
-  home: z.string().min(1, { message: "Home is required"}),
+  phone: z.string().min(10, { message: "Must be a valid phone number"}),
+  house_no: z.string().min(1, { message: "Home is required"}),
   street: z.string().min(1, { message: "Street is required"}),
   suburb: z.string().min(1, { message: "Suburb is required"}),
   state: z.string().min(1, { message: "State is required"}),
@@ -23,20 +31,47 @@ const formSchema = z.object({
   country: z.string().min(2, { message: "Country is required"})
 })
 
-type FormData = z.infer<typeof formSchema>
+export type FormData = z.infer<typeof formSchema>
 
-const FormComponent: React.FC = () => {
-  const { register, handleSubmit, formState: { errors }} = useForm<FormData>({
+const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps) => {
+  const dispatch = useDispatch();
+  const { data: userData } = useSelector((state: RootState) => state.user)
+  const { register, handleSubmit, setValue, formState: { errors }} = useForm<FormData>({
     resolver: zodResolver(formSchema)
   })
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     if (Object.keys(errors).length === 0) {
-      console.log("Submitted: ", data);
+      if (shouldPopulateData?.bool) {
+        const formDataWithPhoneAsString: FormData = {
+          ...data,
+          phone: data.phone.toString()
+        };
+        dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData: formDataWithPhoneAsString }))
+      } else {
+        dispatch(addUser(data))
+      }
     } else {
       console.log("Form has errors. Cannot submit.");
     }
   }
+
+  useEffect(() => {
+    if (shouldPopulateData?.bool && shouldPopulateData.id !== null) {
+      dispatch(getUserById(+shouldPopulateData?.id))
+    }
+  }, [dispatch, shouldPopulateData?.bool, shouldPopulateData?.id])
+
+  useEffect(() => {
+    if (shouldPopulateData?.bool && shouldPopulateData?.id !== null && userData) {
+      Object.keys(userData).forEach((key) => {
+        if (key in formSchema.shape && key in userData) {
+          const userProfileKey = key as keyof TUserWithoutId;
+          setValue(userProfileKey, userData[userProfileKey]);
+        }
+      });
+    }
+  }, [setValue, shouldPopulateData?.bool, shouldPopulateData?.id, userData]);
 
   return (
     <Box
@@ -60,12 +95,13 @@ const FormComponent: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <TextField
-              {...register("givenName")}
-              label="Given Name"
+              {...register("given_name")}
+              label="Given name"
               fullWidth
-              error={Boolean(errors.givenName)}
+              error={Boolean(errors.given_name)}
+              InputLabelProps={{ shrink: true }}
             />
-            {errors.givenName && <Typography sx={{ color: "red" }}>{errors.givenName.message}</Typography>}
+            {errors.given_name && <Typography sx={{ color: "red" }}>{errors.given_name.message}</Typography>}
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField
@@ -73,6 +109,7 @@ const FormComponent: React.FC = () => {
               label="Surname"
               fullWidth
               error={Boolean(errors.surname)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.surname && <Typography sx={{ color: "red" }}>{errors.surname.message}</Typography>}
           </Grid>
@@ -82,6 +119,7 @@ const FormComponent: React.FC = () => {
               label="Email"
               fullWidth
               error={Boolean(errors.email)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.email && <Typography sx={{ color: "red" }}>{errors.email.message}</Typography>}
           </Grid>
@@ -91,6 +129,7 @@ const FormComponent: React.FC = () => {
               label="Phone"
               fullWidth
               error={Boolean(errors.phone)}
+              InputLabelProps={{ shrink: true }}
               type="number"
             />
             {errors.phone && <Typography sx={{ color: "red" }}>{errors.phone.message}</Typography>}
@@ -109,12 +148,13 @@ const FormComponent: React.FC = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <TextField
-              {...register("home")}
+              {...register("house_no")}
               label="Home name or #"
               fullWidth
-              error={Boolean(errors.home)}
+              error={Boolean(errors.house_no)}
+              InputLabelProps={{ shrink: true }}
             />
-            {errors.home && <Typography sx={{ color: "red" }}>{errors.home.message}</Typography>}
+            {errors.house_no && <Typography sx={{ color: "red" }}>{errors.house_no.message}</Typography>}
           </Grid>
           <Grid item xs={12} md={6}>
             <TextField
@@ -122,6 +162,7 @@ const FormComponent: React.FC = () => {
               label="Street"
               fullWidth
               error={Boolean(errors.street)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.street && <Typography sx={{ color: "red" }}>{errors.street.message}</Typography>}
           </Grid>
@@ -131,6 +172,7 @@ const FormComponent: React.FC = () => {
               label="Suburb"
               fullWidth
               error={Boolean(errors.suburb)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.suburb && <Typography sx={{ color: "red" }}>{errors.suburb.message}</Typography>}
           </Grid>
@@ -140,6 +182,7 @@ const FormComponent: React.FC = () => {
               label="State"
               fullWidth
               error={Boolean(errors.state)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.state && <Typography sx={{ color: "red" }}>{errors.state.message}</Typography>}
           </Grid>
@@ -149,6 +192,7 @@ const FormComponent: React.FC = () => {
               label="Postcode"
               fullWidth
               error={Boolean(errors.postcode)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.postcode && <Typography sx={{ color: "red" }}>{errors.postcode.message}</Typography>}
           </Grid>
@@ -158,6 +202,7 @@ const FormComponent: React.FC = () => {
               label="Country"
               fullWidth
               error={Boolean(errors.country)}
+              InputLabelProps={{ shrink: true }}
             />
             {errors.country && <Typography sx={{ color: "red" }}>{errors.country.message}</Typography>}
           </Grid>
@@ -227,7 +272,7 @@ const FormComponent: React.FC = () => {
           }}
           type="submit"
         >
-          Create Referral
+          {shouldPopulateData?.bool ? "Update" : "Create Referral"}
         </Button>
       </Box>
     </Box>
