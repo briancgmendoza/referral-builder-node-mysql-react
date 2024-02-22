@@ -1,8 +1,7 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { putRequest } from "../service/request"
 import { TUserProfile } from "../../../Server/types"
-import { FormData } from "../components/form"
+import { updateUserProfile } from "./thunk";
 
 type RootState = {
   data: TUserProfile | null;
@@ -15,20 +14,6 @@ const initialState: RootState = {
   status: "idle",
   error: ""
 }
-
-const updateUserProfile = createAsyncThunk<TUserProfile, { id: number; formData: FormData }, { rejectValue: string }>(
-  "data/updateUserProfile",
-  async ({ id, formData }, thunkAPI) => {
-
-    try {
-      const response = await putRequest(`/update-user/${id}`, formData);
-      return response;
-    } catch (error) {
-      console.log("Error in FE [app.put(/update-user/:userId)]", error);
-      return thunkAPI.rejectWithValue("Error in updating user profile");
-    }
-  }
-);
 
 const UpdateUserSlice = createSlice({
   name: "Update User",

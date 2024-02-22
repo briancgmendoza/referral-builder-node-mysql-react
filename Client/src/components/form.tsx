@@ -7,13 +7,12 @@ import {
   TextField,
   Typography
 } from "@mui/material"
-import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
 
 import { TFormProps, TUserWithoutId } from "../types";
-import { RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { getUserById } from "../store/userSlice";
 import { updateUserProfile } from "../store/updateUserSlice";
 import { addUser } from "../store/addUserSlice";
@@ -34,9 +33,9 @@ const formSchema = z.object({
 export type FormData = z.infer<typeof formSchema>
 
 const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps) => {
-  const dispatch = useDispatch();
-  const { data: userData } = useSelector((state: RootState) => state.user)
-  const { register, handleSubmit, setValue, formState: { errors }} = useForm<FormData>({
+  const dispatch = useAppDispatch();
+  const { data: userData } = useAppSelector((state) => state.user)
+  const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(formSchema)
   })
 
@@ -50,6 +49,7 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
         dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData: formDataWithPhoneAsString }))
       } else {
         dispatch(addUser(data))
+        reset()
       }
     } else {
       console.log("Form has errors. Cannot submit.");

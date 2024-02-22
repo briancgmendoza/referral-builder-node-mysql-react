@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   TableContainer,
   Table,
@@ -18,19 +17,23 @@ import FormComponent from "./form";
 
 import { formatPhoneNumber } from "../helper";
 import { getUsers } from "../store/usersSlice";
-import { RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { TUserProfile } from "../../../Server/types";
 import { deleteUser } from "../store/deleteUserSlice";
 
 const TableComponent = () => {
-  const dispatch = useDispatch();
-  const { data: usersData, status: usersStatus } = useSelector((state: RootState) => state.users)
+  const dispatch = useAppDispatch();
+  const { data: usersData, status: usersStatus } = useAppSelector((state) => state.users)
+  const { status: addUserStatus } = useAppSelector((state) => state.addedUser)
+  const { status: deleteUserStatus } = useAppSelector((state) => state.delete)
+  const { status: updateUserStatus } = useAppSelector((state) => state.updateUserProfile)
+
   const [openModal, setOpenModal] = useState<boolean>(false)
   const [userId, setUserId] = useState<number | null>(null)
 
   useEffect(() => {
     dispatch(getUsers())
-  }, [dispatch])
+  }, [dispatch, addUserStatus, deleteUserStatus, updateUserStatus])
 
   const TABLE_HEADER = [
     "Given Name",

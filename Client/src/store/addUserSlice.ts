@@ -1,7 +1,7 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { postRequest } from "../service/request"
 import { TUserProfile } from "../../../Server/types"
+import { addUser } from "./thunk";
 
 type RootState = {
   data: TUserProfile | null;
@@ -14,16 +14,6 @@ const initialState: RootState = {
   status: "idle",
   error: ""
 }
-
-const addUser = createAsyncThunk<TUserProfile, unknown, { rejectValue: string }>("data/addUser", async(body, thunkAPI) => {
-  try {
-    const response = await postRequest('/add-user', body)
-    return response
-  } catch (error) {
-    console.log("Error in FE [app.delete(/user/:userId)]", error)
-    return thunkAPI.rejectWithValue("Error in deleting user profile")
-  }
-})
 
 const AddUserSlice = createSlice({
   name: "Add User",
