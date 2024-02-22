@@ -6,7 +6,8 @@ import {
   getUsersService,
   addUserService,
   deleteUserService,
-  updateUserService
+  updateUserService,
+  getUserService
 } from './../service/user.service';
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -39,6 +40,14 @@ export const addUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
+    const userId: number = +req.params.userId
+    const userExists = await findById(userId)
+
+    if (!userExists) {
+      res.status(404).json({ error: `User with id ${userId} not found` });
+      return;
+    }
+
     await deleteUserService(req, res)
   } catch (error) {
     console.log("Error [app.delete(/user/:userId)]: ", error)
@@ -52,13 +61,31 @@ export const updateUser = async (req: Request, res: Response) => {
     const userExists = await findById(userId);
 
     if (!userExists) {
-      res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: `User with id ${userId} not found` });
       return;
     }
 
     await updateUserService(req, res)
   } catch (error) {
     console.log("Error [app.put(/update-user/:userId)]: ", error)
+    res.status(500).json({ error: "Internal Server Error. Please try again later." })
+  }
+}
+
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const userId: number = +req.params.userId
+    const userExists = await findById(userId);
+
+    if (!userExists) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    const user = await getUserService(req, res)
+    res.status(200).json(user)
+  } catch (error) {
+    console.log("Error [app.get(/user/:userId)]: ", error)
     res.status(500).json({ error: "Internal Server Error. Please try again later." })
   }
 }

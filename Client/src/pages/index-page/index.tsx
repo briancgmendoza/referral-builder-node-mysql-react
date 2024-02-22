@@ -72,7 +72,12 @@ const IndexPage = () => {
         close={() => setOpenReferModal(!openReferModal)}
         title="New referral"
         modalContent={
-          <FormComponent />
+          <FormComponent
+            shouldPopulateData={{
+              bool: false,
+              id: null
+            }}
+          />
         }
       />
     </>

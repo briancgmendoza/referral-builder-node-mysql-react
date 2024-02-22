@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
-import { FieldPacket, ResultSetHeader } from "mysql2/promise";
+import { FieldPacket } from "mysql2/promise";
+import { RowDataPacket } from "mysql2";
 
 import { pool } from "../controllers/db.controller"
 import { TUsers, TUserProfile } from './../types/index';
@@ -97,12 +98,7 @@ export const deleteUserService = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    const [result]: [ResultSetHeader, FieldPacket[]] = await pool.query('DELETE FROM UserProfile WHERE user_id = ?', [userId]);
-
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: `User with ID ${userId} not found.` });
-      return;
-    }
+    await pool.query('DELETE FROM UserProfile WHERE user_id = ?', [userId]);
 
     res.status(200).json({ message: `User with ID ${userId} deleted successfully.` });
   } catch (error) {
@@ -151,7 +147,7 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
       WHERE user_id = ?;
     `
 
-    const [result]: [ResultSetHeader, FieldPacket[]] = await pool.query(updateQuery, [
+    await pool.query(updateQuery, [
       given_name,
       surname,
       email,
@@ -165,11 +161,6 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
       avatar_image,
       userId
     ])
-
-    if (result.affectedRows === 0) {
-      res.status(404).json({ error: `User with ID ${userId} not found.` })
-      return;
-    }
 
     const updatedUser: TUserProfile = {
       given_name,
@@ -191,3 +182,15 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
     res.status(500).json({ error: "Internal Server Error" })
   }
 }
+
+export const getUserService = async (req: Request, res: Response): Promise<TUserProfile | null> => {
+  try {
+    const userId = +req.params.userId;
+    
+    const [rows]: [RowDataPacket[], FieldPacket[]]  = await pool.query("SELECT * FROM UserProfile WHERE user_id = ?", [userId]);
+    return rows[0] as TUserProfile
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+};
