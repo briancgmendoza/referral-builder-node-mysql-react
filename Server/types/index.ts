@@ -14,6 +14,5 @@ export type TUserProfile = {
   state: string;
   postcode: string;
   country: string;
-  // avatar_image: Buffer | null; 
   avatar_image: string | null
 }

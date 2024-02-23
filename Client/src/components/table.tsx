@@ -51,7 +51,7 @@ const TableComponent = () => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ p: "2rem"}}>
+      <TableContainer component={Paper} sx={{ p: "2rem" }}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -113,10 +113,12 @@ const TableComponent = () => {
                     }
                   </TableCell>
                   <TableCell>
-                    <IconButton onClick={() => {
-                      setOpenModal(!openModal)
-                      setUserId(+user.user_id!)
-                    }}>
+                    <IconButton
+                      onClick={() => {
+                        setOpenModal(!openModal)
+                        setUserId(+user.user_id!)
+                      }}
+                    >
                       <EditIcon sx={{ color: "#000" }}/>
                     </IconButton>
                     <IconButton

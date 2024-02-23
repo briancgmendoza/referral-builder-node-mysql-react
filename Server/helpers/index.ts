@@ -17,7 +17,7 @@ export const findByEmail = async (email: string): Promise<boolean> => {
   }
 };
 
-export const findById = async (userId: number,): Promise<boolean> => {
+export const findById = async (userId: number): Promise<boolean> => {
   try {
     if (userId === undefined) {
       throw new Error("UserId is required.")
