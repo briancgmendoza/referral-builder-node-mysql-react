@@ -7,13 +7,16 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton
+  IconButton,
+  Box
 } from "@mui/material"
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Swal from "sweetalert2";
 
 import Modal from "./modal";
 import FormComponent from "./form";
+import DefaultAvatar from "../assets/default_avatar.png"
 
 import { formatPhoneNumber } from "../helper";
 import { getUsers } from "../store/usersSlice";
@@ -25,7 +28,7 @@ const TableComponent = () => {
   const dispatch = useAppDispatch();
   const { data: usersData, status: usersStatus } = useAppSelector((state) => state.users)
   const { status: addUserStatus } = useAppSelector((state) => state.addedUser)
-  const { status: deleteUserStatus } = useAppSelector((state) => state.delete)
+  const { status: deleteUserStatus, error: deleteUserError } = useAppSelector((state) => state.delete)
   const { status: updateUserStatus } = useAppSelector((state) => state.updateUserProfile)
 
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -40,8 +43,11 @@ const TableComponent = () => {
     "Surname",
     "Email",
     "Phone",
+    "Avatar",
     "Actions"
   ]
+
+  const uploadedAvatarFilePath = "src/assets/"
 
   return (
     <>
@@ -82,13 +88,72 @@ const TableComponent = () => {
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{formatPhoneNumber(+user.phone)}</TableCell>
                   <TableCell>
+                    {user.avatar_image ? (
+                      <Box
+                        component="img"
+                        src={`${uploadedAvatarFilePath}${user.avatar_image}`}
+                        alt={`${user.given_name}-${user.surname}-avatar`}
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    ):
+                      <Box
+                        component="img"
+                        src={DefaultAvatar}
+                        alt={`${user.given_name}-${user.surname}-avatar`}
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    }
+                  </TableCell>
+                  <TableCell>
                     <IconButton onClick={() => {
                       setOpenModal(!openModal)
                       setUserId(+user.user_id!)
                     }}>
                       <EditIcon sx={{ color: "#000" }}/>
                     </IconButton>
-                    <IconButton onClick={() => dispatch(deleteUser(+user.user_id!))}>
+                    <IconButton
+                      onClick={() =>
+                        dispatch(deleteUser(+user.user_id!))
+                          .then(() => {
+                            Swal.fire({
+                              text: "User deleted successfully!",
+                              toast: true,
+                              icon: "success",
+                              background: "#DDF9E5",
+                              position: "top",
+                              color: "#447E4D",
+                              timer: 3000,
+                              allowEscapeKey: true,
+                              showCloseButton: true,
+                              showCancelButton: false,
+                              showConfirmButton: false
+                            });
+                          })
+                          .catch(() => {
+                            Swal.fire({
+                              text: deleteUserError,
+                              toast: true,
+                              icon: "error",
+                              background: "#DDF9E5",
+                              position: "top",
+                              color: "red",
+                              timer: 3000,
+                              allowEscapeKey: true,
+                              showCloseButton: true,
+                              showCancelButton: false,
+                              showConfirmButton: false
+                            });
+                          })
+                      }
+                    >
                       <DeleteIcon sx={{ color: "#000" }}/>
                     </IconButton>
                   </TableCell>
@@ -118,6 +183,7 @@ const TableComponent = () => {
         }
       />
     </>
+
   )
 }
 

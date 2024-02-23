@@ -28,5 +28,18 @@ export type TUserWithoutId = {
   state: string;
   postcode: string;
   country: string;
-  // avatar_image: Buffer | null; 
+}
+
+export type TUserProfileFormData = {
+  given_name: string;
+  surname: string;
+  email: string;
+  phone: string;
+  house_no: string;
+  street: string;
+  suburb: string;
+  state: string;
+  postcode: string;
+  country: string;
+  avatar_image?: File | string | null;
 }

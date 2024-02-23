@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,8 +10,9 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
+import Swal from "sweetalert2";
 
-import { TFormProps, TUserWithoutId } from "../types";
+import { TFormProps, TUserProfileFormData, TUserWithoutId } from "../types";
 import { useAppDispatch, useAppSelector } from "../store";
 import { getUserById } from "../store/userSlice";
 import { updateUserProfile } from "../store/updateUserSlice";
@@ -27,7 +28,8 @@ const formSchema = z.object({
   suburb: z.string().min(1, { message: "Suburb is required"}),
   state: z.string().min(1, { message: "State is required"}),
   postcode: z.string().min(1, { message: "Postcode is required"}),
-  country: z.string().min(2, { message: "Country is required"})
+  country: z.string().min(2, { message: "Country is required"}),
+  avatar_image: z.any().optional()
 })
 
 export type FormData = z.infer<typeof formSchema>
@@ -35,26 +37,116 @@ export type FormData = z.infer<typeof formSchema>
 const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps) => {
   const dispatch = useAppDispatch();
   const { data: userData } = useAppSelector((state) => state.user)
+  const { error: addUserError } = useAppSelector((state) => state.addedUser)
+  const { error: updateUserError } = useAppSelector((state) => state.updateUserProfile)
   const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(formSchema)
   })
 
+  const [avatar, setAvatar] = useState<File | null>(null)
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target?.files?.length) {
+      setAvatar(event.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    console.log("To track avatar uploading", avatar)
+  }, [avatar])
+
+  const prepareFormData = (data: FormData): TUserProfileFormData => {
+    const formData: TUserProfileFormData = {
+      given_name: data.given_name,
+      surname: data.surname,
+      email: data.email,
+      phone: data.phone,
+      house_no: data.house_no,
+      street: data.street,
+      suburb: data.suburb,
+      state: data.state,
+      postcode: data.postcode,
+      country: data.country,
+      avatar_image: avatar
+    };
+
+    return formData;
+  };
+  
   const onSubmit: SubmitHandler<FormData> = (data) => {
     if (Object.keys(errors).length === 0) {
+      const formData = prepareFormData(data);
+
       if (shouldPopulateData?.bool) {
-        const formDataWithPhoneAsString: FormData = {
-          ...data,
-          phone: data.phone.toString()
-        };
-        dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData: formDataWithPhoneAsString }))
+        dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData }))
+        .then(() => {
+          Swal.fire({
+            text: "Updating user profile successful",
+            toast: true,
+            icon: "success",
+            background: "#DDF9E5",
+            position: "top",
+            color: "#447E4D",
+            timer: 3000,
+            allowEscapeKey: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            text: updateUserError,
+            toast: true,
+            icon: "error",
+            background: "#DDF9E5",
+            position: "top",
+            color: "red",
+            timer: 3000,
+            allowEscapeKey: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false
+          });
+        })
       } else {
-        dispatch(addUser(data))
-        reset()
+        dispatch(addUser(formData))
+        .then(() => {
+          Swal.fire({
+            text: "Creating user successful",
+            toast: true,
+            icon: "success",
+            background: "#DDF9E5",
+            position: "top",
+            color: "#447E4D",
+            timer: 3000,
+            allowEscapeKey: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false
+          });
+        })
+        .catch(() => {
+          Swal.fire({
+            text: addUserError,
+            toast: true,
+            icon: "error",
+            background: "#DDF9E5",
+            position: "top",
+            color: "red",
+            timer: 3000,
+            allowEscapeKey: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            showConfirmButton: false
+          })
+        })
+        reset();
       }
     } else {
       console.log("Form has errors. Cannot submit.");
     }
-  }
+  };
 
   useEffect(() => {
     if (shouldPopulateData?.bool && shouldPopulateData.id !== null) {
@@ -226,30 +318,45 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
           justifyContent: "space-between"
         }}
       >
-        <Button
-          sx={{
-            width: "100%",
-            maxWidth: {
-              xs: "230px"
-            },
-            color: "#000",
-            padding: ".5rem 1.5rem",
-            backgroundColor: "#fff",
-            "&:hover": {
-              backgroundColor: "#dedede"
-            },
-            border: "1.5px solid #dedede",
-            textTransform: "uppercase",
-            fontWeight: "bolder",
-            mb: {
-              xs: "1rem",
-              md: "0px"
-            }
-          }}
-          onClick={() => {}}
-        >
-          Upload avatar
-        </Button>
+        {
+          shouldPopulateData?.bool && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                style={{ display: "none" }}
+                id="avatar-input"
+              />
+              <label htmlFor="avatar-input">
+                <Button
+                  component="span"
+                  sx={{
+                    width: "100%",
+                    maxWidth: {
+                      xs: "230px",
+                    },
+                    color: "#000",
+                    padding: ".5rem 1.5rem",
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#dedede",
+                    },
+                    border: "1.5px solid #dedede",
+                    textTransform: "uppercase",
+                    fontWeight: "bolder",
+                    mb: {
+                      xs: "1rem",
+                      md: "0px",
+                    },
+                  }}
+                >
+                  Upload avatar
+                </Button>
+              </label>
+            </>
+          )
+        }
 
         <Button
           sx={{

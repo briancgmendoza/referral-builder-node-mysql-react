@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Express, Request, Response } from "express"
 import { FieldPacket } from "mysql2/promise";
 import { RowDataPacket } from "mysql2";
 
@@ -31,6 +31,7 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
       country
     }: TUserProfile = req.body;
 
+    const avatar_image: Express.Multer.File | undefined = req.file;
 
     const requiredFields = [
       'given_name',
@@ -51,8 +52,8 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
     }
 
     const query = `
-      INSERT INTO UserProfile (given_name, surname, email, phone, house_no, street, suburb, state, postcode, country)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO UserProfile (given_name, surname, email, phone, house_no, street, suburb, state, postcode, country, avatar_image)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     await pool.query(query, [
@@ -65,7 +66,8 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
       suburb,
       state,
       postcode,
-      country
+      country,
+      avatar_image ? avatar_image.filename : null
     ]);
 
     const addedUser: TUserProfile = {
@@ -79,7 +81,7 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
       state,
       postcode,
       country,
-      avatar_image: null
+      avatar_image: avatar_image ? avatar_image.filename : null
     } 
 
     res.status(201).json({ message: 'User added successfully', data: addedUser });
@@ -121,9 +123,10 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
       suburb,
       state,
       postcode,
-      country,
-      avatar_image
+      country
     }: TUserProfile = req.body
+
+    const avatar_image: Express.Multer.File | undefined = req.file;
 
     if (!userId) {
       res.status(400).json({ error: 'User ID is required.' });
@@ -158,7 +161,7 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
       state,
       postcode,
       country,
-      avatar_image,
+      avatar_image ? avatar_image.filename : null,
       userId
     ])
 
@@ -173,7 +176,7 @@ export const updateUserService = async (req: Request, res: Response): Promise<vo
       state,
       postcode,
       country,
-      avatar_image
+      avatar_image: avatar_image ? avatar_image.filename : null
     }
 
     res.status(200).json({ message: `User with ID ${userId} updated successfully.`, data: updatedUser })
