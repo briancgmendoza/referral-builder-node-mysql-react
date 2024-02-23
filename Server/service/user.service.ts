@@ -5,10 +5,10 @@ import { RowDataPacket } from "mysql2";
 import { pool } from "../controllers/db.controller"
 import { TUsers, TUserProfile } from './../types/index';
 
-
 export const getUsersService = async (): Promise<TUsers[]> => {
   try {
     const [rows] = await pool.query('SELECT * FROM UserProfile');
+
     return rows as TUsers[];
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -46,7 +46,7 @@ export const addUserService = async (req: Request, res: Response): Promise<void>
       'country'
     ];
 
-    if (requiredFields.some(field => !req.body[field])) {
+    if (requiredFields.some((field) => !req.body[field])) {
       res.status(400).json({ error: 'Missing field. Please check your input.' });
       return;
     }
@@ -101,7 +101,6 @@ export const deleteUserService = async (req: Request, res: Response): Promise<vo
     }
 
     await pool.query('DELETE FROM UserProfile WHERE user_id = ?', [userId]);
-
     res.status(200).json({ message: `User with ID ${userId} deleted successfully.` });
   } catch (error) {
     console.error('Error deleting user:', error);
@@ -191,6 +190,7 @@ export const getUserService = async (req: Request, res: Response): Promise<TUser
     const userId = +req.params.userId;
     
     const [rows]: [RowDataPacket[], FieldPacket[]]  = await pool.query("SELECT * FROM UserProfile WHERE user_id = ?", [userId]);
+    
     return rows[0] as TUserProfile
   } catch (error) {
     console.error('Error fetching data:', error);

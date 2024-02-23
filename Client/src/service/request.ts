@@ -7,6 +7,7 @@ const api = axios.create({
 export const getRequest = async (url: string) => {
   try {
     const response: AxiosResponse = await api.get(url);
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -24,6 +25,7 @@ export const postRequest = async (url: string, body: unknown, headers?: Record<s
     const response: AxiosResponse = await api.post(url, body, {
       headers: headers ?? {}
     });
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -41,6 +43,7 @@ export const putRequest = async (url: string, body: unknown, headers?: Record<st
     const response: AxiosResponse = await api.put(url, body, {
       headers: headers ?? {}
     });
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -56,6 +59,7 @@ export const putRequest = async (url: string, body: unknown, headers?: Record<st
 export const deleteRequest = async (url: string) => {
   try {
     const response: AxiosResponse = await api.delete(url);
+    
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {

@@ -8,6 +8,7 @@ export const getUsers = createAsyncThunk<TUserProfile[], void, { rejectValue: st
   "data/getUsers", async (_, thunkAPI) => {
     try {
       const response = await getRequest("/users")
+
       return response
     } catch (error) {
       console.log("Error in FE [app.get(/users)]", error)
@@ -19,6 +20,7 @@ export const getUserById = createAsyncThunk<TUserProfile, number, { rejectValue:
   "data/getUserById", async (id, thunkAPI) => {
     try {
       const response = await getRequest(`/user/${id}`)
+
       return response
     } catch (error) {
       console.log("Error in FE [app.get(/user/:userId)]", error)
@@ -38,10 +40,11 @@ export const addUser = createAsyncThunk<TUserProfile, FormData, { rejectValue: s
         }
       }
       const response = await postRequest('/add-user', formData, headers)
+
       return response
     } catch (error) {
-      console.log("Error in FE [app.delete(/user/:userId)]", error)
-      return thunkAPI.rejectWithValue("Error in deleting user profile")
+      console.log("Error in FE [app.post(/user/:userId)]", error)
+      return thunkAPI.rejectWithValue("Error in adding user")
     }
 })
 
@@ -49,6 +52,7 @@ export const deleteUser = createAsyncThunk<TUserProfile, number, { rejectValue: 
   "data/deleteUser", async (id, thunkAPI) => {
     try {
       const response = await deleteRequest(`/user/${id}`)
+
       return response
     } catch (error) {
       console.log("Error in FE [app.delete(/user/:userId)]", error)
@@ -68,6 +72,7 @@ export const updateUserProfile = createAsyncThunk<TUserProfile, { id: number; fo
         }
       }
       const response = await putRequest(`/update-user/${id}`, formData, headers);
+
       return response;
     } catch (error) {
       console.log("Error in FE [app.put(/update-user/:userId)]", error);
