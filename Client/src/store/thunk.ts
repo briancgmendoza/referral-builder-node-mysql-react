@@ -50,8 +50,16 @@ export const deleteUser = createAsyncThunk<TUserProfile, number, { rejectValue: 
 
 export const updateUserProfile = createAsyncThunk<TUserProfile, { id: number; formData: FormData }, { rejectValue: string }>(
   "data/updateUserProfile", async ({ id, formData }, thunkAPI) => {
+    let headers
     try {
-      const response = await putRequest(`/update-user/${id}`, formData);
+      const { avatar_image } = formData
+
+      if (avatar_image) {
+        headers = {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+      const response = await putRequest(`/update-user/${id}`, formData, headers);
       return response;
     } catch (error) {
       console.log("Error in FE [app.put(/update-user/:userId)]", error);

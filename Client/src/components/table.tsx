@@ -7,13 +7,16 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton
+  IconButton,
+  Box
 } from "@mui/material"
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+// import { Image } from "semantic-ui-react"
 
 import Modal from "./modal";
 import FormComponent from "./form";
+import DefaultAvatar from "../assets/default_avatar.png"
 
 import { formatPhoneNumber } from "../helper";
 import { getUsers } from "../store/usersSlice";
@@ -40,8 +43,11 @@ const TableComponent = () => {
     "Surname",
     "Email",
     "Phone",
+    "Avatar",
     "Actions"
   ]
+
+  const uploadedAvatarFilePath = "src/assets/"
 
   return (
     <>
@@ -81,6 +87,31 @@ const TableComponent = () => {
                   <TableCell>{user.surname}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>{formatPhoneNumber(+user.phone)}</TableCell>
+                  <TableCell>
+                    {user.avatar_image ? (
+                      <Box
+                        component="img"
+                        src={`${uploadedAvatarFilePath}${user.avatar_image}`}
+                        alt={`${user.given_name}-${user.surname}-avatar`}
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    ):
+                      <Box
+                        component="img"
+                        src={DefaultAvatar}
+                        alt={`${user.given_name}-${user.surname}-avatar`}
+                        sx={{
+                          width: "50px",
+                          height: "50px",
+                          borderRadius: "50%"
+                        }}
+                      />
+                    }
+                  </TableCell>
                   <TableCell>
                     <IconButton onClick={() => {
                       setOpenModal(!openModal)

@@ -34,9 +34,11 @@ export const postRequest = async (url: string, body: unknown) => {
   }
 };
 
-export const putRequest = async (url: string, body: unknown) => {
+export const putRequest = async (url: string, body: unknown, headers?: Record<string, string>) => {
   try {
-    const response: AxiosResponse = await api.put(url, body);
+    const response: AxiosResponse = await api.put(url, body, {
+      headers: headers || {}
+    });
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
