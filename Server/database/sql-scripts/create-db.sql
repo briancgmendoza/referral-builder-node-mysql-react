@@ -1,7 +1,7 @@
 -- Create Database if not exists
 CREATE DATABASE IF NOT EXISTS `userdb`;
 
--- Use the university database
+-- Use the userdb database
 USE `userdb`;
 
 -- Create UserProfile table
