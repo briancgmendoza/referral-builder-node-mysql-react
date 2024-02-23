@@ -26,10 +26,18 @@ export const getUserById = createAsyncThunk<TUserProfile, number, { rejectValue:
     }
 })
 
-export const addUser = createAsyncThunk<TUserProfile, unknown, { rejectValue: string }>(
-  "data/addUser", async (body, thunkAPI) => {
+export const addUser = createAsyncThunk<TUserProfile, FormData, { rejectValue: string }>(
+  "data/addUser", async (formData, thunkAPI) => {
+    let headers
     try {
-      const response = await postRequest('/add-user', body)
+      const { avatar_image } = formData
+
+      if (avatar_image) {
+        headers = {
+          "Content-Type": "multipart/form-data"
+        }
+      }
+      const response = await postRequest('/add-user', formData, headers)
       return response
     } catch (error) {
       console.log("Error in FE [app.delete(/user/:userId)]", error)

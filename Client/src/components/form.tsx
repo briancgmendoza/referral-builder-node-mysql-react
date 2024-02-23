@@ -44,10 +44,13 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target?.files?.length) {
-      console.log("handleAvatarChange", event.target.files[0])
       setAvatar(event.target.files[0]);
     }
   };
+
+  useEffect(() => {
+    console.log("To track avatar uploading", avatar)
+  }, [avatar])
 
   const prepareFormData = (data: FormData): TUserProfileFormData => {
     const formData: TUserProfileFormData = {
@@ -63,21 +66,17 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
       country: data.country,
       avatar_image: avatar
     };
-  
-    console.log("prepareFormData", formData)
 
     return formData;
   };
   
   const onSubmit: SubmitHandler<FormData> = (data) => {
     if (Object.keys(errors).length === 0) {
-      if (shouldPopulateData?.bool) {
-        const formData = prepareFormData(data);
+      const formData = prepareFormData(data);
 
-        console.log("onSubmit", formData)
+      if (shouldPopulateData?.bool) {
         dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData }));
       } else {
-        const formData = prepareFormData(data);
         dispatch(addUser(formData));
         reset();
       }
@@ -256,39 +255,45 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
           justifyContent: "space-between"
         }}
       >
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleAvatarChange}
-          style={{ display: "none" }}
-          id="avatar-input"
-        />
-        <label htmlFor="avatar-input">
-          <Button
-            component="span"
-            sx={{
-              width: "100%",
-              maxWidth: {
-                xs: "230px",
-              },
-              color: "#000",
-              padding: ".5rem 1.5rem",
-              backgroundColor: "#fff",
-              "&:hover": {
-                backgroundColor: "#dedede",
-              },
-              border: "1.5px solid #dedede",
-              textTransform: "uppercase",
-              fontWeight: "bolder",
-              mb: {
-                xs: "1rem",
-                md: "0px",
-              },
-            }}
-          >
-            Upload avatar
-          </Button>
-        </label>
+        {
+          shouldPopulateData?.bool && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                style={{ display: "none" }}
+                id="avatar-input"
+              />
+              <label htmlFor="avatar-input">
+                <Button
+                  component="span"
+                  sx={{
+                    width: "100%",
+                    maxWidth: {
+                      xs: "230px",
+                    },
+                    color: "#000",
+                    padding: ".5rem 1.5rem",
+                    backgroundColor: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#dedede",
+                    },
+                    border: "1.5px solid #dedede",
+                    textTransform: "uppercase",
+                    fontWeight: "bolder",
+                    mb: {
+                      xs: "1rem",
+                      md: "0px",
+                    },
+                  }}
+                >
+                  Upload avatar
+                </Button>
+              </label>
+            </>
+          )
+        }
 
         <Button
           sx={{
