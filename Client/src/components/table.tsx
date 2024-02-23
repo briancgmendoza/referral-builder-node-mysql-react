@@ -12,7 +12,7 @@ import {
 } from "@mui/material"
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-// import { Image } from "semantic-ui-react"
+import Swal from "sweetalert2";
 
 import Modal from "./modal";
 import FormComponent from "./form";
@@ -28,7 +28,7 @@ const TableComponent = () => {
   const dispatch = useAppDispatch();
   const { data: usersData, status: usersStatus } = useAppSelector((state) => state.users)
   const { status: addUserStatus } = useAppSelector((state) => state.addedUser)
-  const { status: deleteUserStatus } = useAppSelector((state) => state.delete)
+  const { status: deleteUserStatus, error: deleteUserError } = useAppSelector((state) => state.delete)
   const { status: updateUserStatus } = useAppSelector((state) => state.updateUserProfile)
 
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -48,6 +48,38 @@ const TableComponent = () => {
   ]
 
   const uploadedAvatarFilePath = "src/assets/"
+
+  useEffect(() => {
+    if (deleteUserStatus === "succeeded") {
+      Swal.fire({
+        text: "User deleted successfully!",
+        toast: true,
+        icon: "success",
+        background: "#DDF9E5",
+        position: "top",
+        color: "#447E4D",
+        timer: 3000,
+        allowEscapeKey: true,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: false
+      });
+    } else if (deleteUserStatus === "failed") {
+      Swal.fire({
+        text: deleteUserError,
+        toast: true,
+        icon: "error",
+        background: "#DDF9E5",
+        position: "top",
+        color: "red",
+        timer: 3000,
+        allowEscapeKey: true,
+        showCloseButton: true,
+        showCancelButton: false,
+        showConfirmButton: false
+      });
+    }
+  }, [deleteUserError, deleteUserStatus])
 
   return (
     <>
@@ -149,6 +181,7 @@ const TableComponent = () => {
         }
       />
     </>
+
   )
 }
 
