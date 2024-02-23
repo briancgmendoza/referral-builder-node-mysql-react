@@ -49,38 +49,6 @@ const TableComponent = () => {
 
   const uploadedAvatarFilePath = "src/assets/"
 
-  useEffect(() => {
-    if (deleteUserStatus === "succeeded") {
-      Swal.fire({
-        text: "User deleted successfully!",
-        toast: true,
-        icon: "success",
-        background: "#DDF9E5",
-        position: "top",
-        color: "#447E4D",
-        timer: 3000,
-        allowEscapeKey: true,
-        showCloseButton: true,
-        showCancelButton: false,
-        showConfirmButton: false
-      });
-    } else if (deleteUserStatus === "failed") {
-      Swal.fire({
-        text: deleteUserError,
-        toast: true,
-        icon: "error",
-        background: "#DDF9E5",
-        position: "top",
-        color: "red",
-        timer: 3000,
-        allowEscapeKey: true,
-        showCloseButton: true,
-        showCancelButton: false,
-        showConfirmButton: false
-      });
-    }
-  }, [deleteUserError, deleteUserStatus])
-
   return (
     <>
       <TableContainer component={Paper} sx={{ p: "2rem"}}>
@@ -151,7 +119,41 @@ const TableComponent = () => {
                     }}>
                       <EditIcon sx={{ color: "#000" }}/>
                     </IconButton>
-                    <IconButton onClick={() => dispatch(deleteUser(+user.user_id!))}>
+                    <IconButton
+                      onClick={() =>
+                        dispatch(deleteUser(+user.user_id!))
+                          .then(() => {
+                            Swal.fire({
+                              text: "User deleted successfully!",
+                              toast: true,
+                              icon: "success",
+                              background: "#DDF9E5",
+                              position: "top",
+                              color: "#447E4D",
+                              timer: 3000,
+                              allowEscapeKey: true,
+                              showCloseButton: true,
+                              showCancelButton: false,
+                              showConfirmButton: false
+                            });
+                          })
+                          .catch(() => {
+                            Swal.fire({
+                              text: deleteUserError,
+                              toast: true,
+                              icon: "error",
+                              background: "#DDF9E5",
+                              position: "top",
+                              color: "red",
+                              timer: 3000,
+                              allowEscapeKey: true,
+                              showCloseButton: true,
+                              showCancelButton: false,
+                              showConfirmButton: false
+                            });
+                          })
+                      }
+                    >
                       <DeleteIcon sx={{ color: "#000" }}/>
                     </IconButton>
                   </TableCell>
