@@ -10,7 +10,6 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
-import Swal from "sweetalert2";
 
 import { TFormProps, TUserProfileFormData, TUserWithoutId } from "../types";
 import { useAppDispatch, useAppSelector } from "../store";
@@ -37,8 +36,6 @@ export type FormData = z.infer<typeof formSchema>
 const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps) => {
   const dispatch = useAppDispatch();
   const { data: userData } = useAppSelector((state) => state.user)
-  const { error: addUserError } = useAppSelector((state) => state.addedUser)
-  const { error: updateUserError } = useAppSelector((state) => state.updateUserProfile)
   const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(formSchema)
   })
@@ -79,68 +76,8 @@ const FormComponent: React.FC<TFormProps> = ({ shouldPopulateData }: TFormProps)
 
       if (shouldPopulateData?.bool) {
         dispatch(updateUserProfile({ id: +shouldPopulateData.id!, formData }))
-        .then(() => {
-          Swal.fire({
-            text: "Updating user profile successful",
-            toast: true,
-            icon: "success",
-            background: "#DDF9E5",
-            position: "top",
-            color: "#447E4D",
-            timer: 3000,
-            allowEscapeKey: true,
-            showCloseButton: true,
-            showCancelButton: false,
-            showConfirmButton: false
-          });
-        })
-        .catch(() => {
-          Swal.fire({
-            text: updateUserError,
-            toast: true,
-            icon: "error",
-            background: "#DDF9E5",
-            position: "top",
-            color: "red",
-            timer: 3000,
-            allowEscapeKey: true,
-            showCloseButton: true,
-            showCancelButton: false,
-            showConfirmButton: false
-          });
-        })
       } else {
         dispatch(addUser(formData))
-        .then(() => {
-          Swal.fire({
-            text: "Creating user successful",
-            toast: true,
-            icon: "success",
-            background: "#DDF9E5",
-            position: "top",
-            color: "#447E4D",
-            timer: 3000,
-            allowEscapeKey: true,
-            showCloseButton: true,
-            showCancelButton: false,
-            showConfirmButton: false
-          });
-        })
-        .catch(() => {
-          Swal.fire({
-            text: addUserError,
-            toast: true,
-            icon: "error",
-            background: "#DDF9E5",
-            position: "top",
-            color: "red",
-            timer: 3000,
-            allowEscapeKey: true,
-            showCloseButton: true,
-            showCancelButton: false,
-            showConfirmButton: false
-          })
-        })
         reset();
       }
     } else {
