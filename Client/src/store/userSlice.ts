@@ -1,15 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
-import { TUserProfile } from "../../../Server/types"
 import { getUserById } from "./thunk";
+import { TRootState, IPayloadAction } from "../types";
 
-type RootState = {
-  data: TUserProfile | null;
-  status: string;
-  error: string;
-}
-
-const initialState: RootState = {
+const initialState: TRootState = {
   data: null,
   status: "idle",
   error: ""
@@ -24,7 +18,7 @@ const UserSlice = createSlice({
       .addCase(getUserById.pending, (state) => {
         state.status = "loading"
       })
-      .addCase(getUserById.fulfilled, (state, action: PayloadAction<TUserProfile>) => {
+      .addCase(getUserById.fulfilled, (state, action: PayloadAction<IPayloadAction>) => {
         state.status = "succeeded"
         state.data = action.payload
       })

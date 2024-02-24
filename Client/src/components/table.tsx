@@ -12,7 +12,6 @@ import {
 } from "@mui/material"
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import Swal from "sweetalert2";
 
 import Modal from "./modal";
 import FormComponent from "./form";
@@ -28,7 +27,7 @@ const TableComponent = () => {
   const dispatch = useAppDispatch();
   const { data: usersData, status: usersStatus } = useAppSelector((state) => state.users)
   const { status: addUserStatus } = useAppSelector((state) => state.addedUser)
-  const { status: deleteUserStatus, error: deleteUserError } = useAppSelector((state) => state.delete)
+  const { status: deleteUserStatus } = useAppSelector((state) => state.delete)
   const { status: updateUserStatus } = useAppSelector((state) => state.updateUserProfile)
 
   const [openModal, setOpenModal] = useState<boolean>(false)
@@ -121,41 +120,7 @@ const TableComponent = () => {
                     >
                       <EditIcon sx={{ color: "#000" }}/>
                     </IconButton>
-                    <IconButton
-                      onClick={() =>
-                        dispatch(deleteUser(+user.user_id!))
-                          .then(() => {
-                            Swal.fire({
-                              text: "User deleted successfully!",
-                              toast: true,
-                              icon: "success",
-                              background: "#DDF9E5",
-                              position: "top",
-                              color: "#447E4D",
-                              timer: 3000,
-                              allowEscapeKey: true,
-                              showCloseButton: true,
-                              showCancelButton: false,
-                              showConfirmButton: false
-                            });
-                          })
-                          .catch(() => {
-                            Swal.fire({
-                              text: deleteUserError,
-                              toast: true,
-                              icon: "error",
-                              background: "#DDF9E5",
-                              position: "top",
-                              color: "red",
-                              timer: 3000,
-                              allowEscapeKey: true,
-                              showCloseButton: true,
-                              showCancelButton: false,
-                              showConfirmButton: false
-                            });
-                          })
-                      }
-                    >
+                    <IconButton onClick={() => dispatch(deleteUser(+user.user_id!))}>
                       <DeleteIcon sx={{ color: "#000" }}/>
                     </IconButton>
                   </TableCell>

@@ -1,3 +1,15 @@
+import { TUserProfile } from "../../../Server/types";
+
+export type TRootState = {
+  data: TUserProfile | null;
+  status: string;
+  error: string;
+}
+
+export interface IPayloadAction extends TUserProfile {
+  message?: string;
+}
+
 export type TContainerProps = {
   children: React.ReactNode;
 }
