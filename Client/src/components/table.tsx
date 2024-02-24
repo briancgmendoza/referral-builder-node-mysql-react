@@ -50,7 +50,7 @@ const TableComponent = () => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ p: "2rem" }}>
+      <TableContainer component={Paper} sx={{ py: "2rem" }}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
@@ -128,7 +128,7 @@ const TableComponent = () => {
               ))
             ): (
               <TableRow>
-                <TableCell colSpan={5} align="center">No data</TableCell>
+                <TableCell colSpan={6} align="center">No data</TableCell>
               </TableRow>
             )}
           </TableBody>
