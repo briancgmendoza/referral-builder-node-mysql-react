@@ -4,7 +4,12 @@ import { TContainerProps } from "../types"
 
 const Container: React.FC<TContainerProps> = ({ children }: TContainerProps) => {
   return (
-    <Box>
+    <Box
+      sx={{
+        width: "90%",
+        mx: "auto"
+      }}
+    >
       {children}
     </Box>
   )
