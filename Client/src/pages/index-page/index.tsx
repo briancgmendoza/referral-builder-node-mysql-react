@@ -8,11 +8,14 @@ import FormComponent from "../../components/form"
 const IndexPage = () => {
   const [openReferModal, setOpenReferModal] = useState(false)
   return (
-    <>
+    <Box
+      sx={{
+        width: "80%",
+        mx: "auto"
+      }}
+    >
       <Box
         sx={{
-          width: "80%",
-          mx: "auto",
           my: "2rem",
           display: "flex",
           justifyContent: "flex-start"
@@ -33,9 +36,6 @@ const IndexPage = () => {
       </Box>
       <Box
         sx={{
-          width: "80%",
-          mx: "auto",
-          my: "2rem",
           backgroundColor: "#fff",
           borderRadius: "5px"
         }}
@@ -44,8 +44,6 @@ const IndexPage = () => {
       </Box>
       <Box
         sx={{
-          width: "80%",
-          mx: "auto",
           my: "2rem",
           display: "flex",
           justifyContent: "flex-end"
@@ -80,7 +78,7 @@ const IndexPage = () => {
           />
         }
       />
-    </>
+    </Box>
   )
 }
 
